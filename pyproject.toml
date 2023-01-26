@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "inspector"
+version = "0.1.0"
+description = ""
+authors = ["Agustin Marquez <agusdmb@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.2.1"
+black = "^22.12.0"
+mypy = "^0.991"
+pylint = "^2.15.10"
+isort = "^5.11.4"
+coverage = "^7.1.0"
+safety = "^2.3.5"
+bandit = "^1.7.4"
+pre-commit = "^3.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.messages_control]
+disable = [
+  # "C0103",  # Argument name X doesnt conform to snake_case naming style
+  "C0114",  # Missing module docstring
+  "C0115",  # Missing class docstring
+  "C0116",  # Missing function or method docstring
+  # "R0902",  # Too many instance attributes
+  # "R0903",  # Too few public methods
+  # "R0913",  # Too many arguments
+  # "R0914",  # Too many local variables
+  # "W0212",  # Access to a protected member
+  # "W0511",  # TODO XXX FIXME
+  # "R0801",  # similarities
+]
+extension-pkg-whitelist = "pydantic"
+
