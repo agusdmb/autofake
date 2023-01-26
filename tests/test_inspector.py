@@ -100,15 +100,17 @@ def test_get_recrods(inspector: Inspector, args_func, args_kwargs_func):
 
 def test_reply():
     inspector = Inspector(Mode.FAKE)
-    inspector.load_records({"function": [Record(result=None)]})
+    inspector.load_records({"function": [Record((3,), {"b": 4}, result=7)]})
 
     @inspector("function")
-    def function():
+    def function(a, *, b):
         raise Exception("Should not run")
 
-    assert function() is None
+    assert function(3, b=4) == 7
 
 
-# def test_get_record():
-#     records = {"first_func": [Record()], "second_func": [Record([3, 4], result=7)]}
-#     get_result_from("second_func", (3, 4))
+def test_get_record():
+    inspector = Inspector(Mode.FAKE)
+    records = {"first_func": [Record()], "second_func": [Record((3, 4), result=7)]}
+    inspector.load_records(records)
+    assert inspector._get_result_from("second_func", *(3, 4)) == 7

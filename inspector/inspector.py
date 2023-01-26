@@ -19,7 +19,7 @@ class Record:
 
 
 class Inspector:
-    def __init__(self, mode: Mode):
+    def __init__(self, mode: Mode = Mode.PRODUCTION):
         self._records: dict[str, list[Record]] = defaultdict(list)
         self._mode = mode
 
@@ -29,9 +29,9 @@ class Inspector:
     def _production_mode(self, function: Callable):
         return function
 
-    def _fake_mode(self, function: Callable):
+    def _fake_mode(self, name: str):
         def wrapper(*args, **kwargs):
-            return None
+            return self._get_result_from(name, *args, **kwargs)
 
         return wrapper
 
@@ -41,7 +41,7 @@ class Inspector:
                 return self._production_mode(function)
 
             if self._mode == Mode.FAKE:
-                return self._fake_mode(function)
+                return self._fake_mode(name)
 
             def wrapper(*args, **kwargs):
                 result = function(*args, **kwargs)
@@ -59,3 +59,9 @@ class Inspector:
 
     def get_records(self) -> dict[str, list[Record]]:
         return self._records
+
+    def _get_result_from(self, name: str, *args, **kwargs) -> Any:
+        for record in self._records[name]:
+            if record.args == args and record.kwargs == kwargs:
+                return record.result
+        raise ValueError("Record not found")
