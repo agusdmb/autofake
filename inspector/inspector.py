@@ -2,7 +2,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Any
+from typing import Any, Tuple
 
 
 class Mode(Enum):
@@ -13,7 +13,7 @@ class Mode(Enum):
 
 @dataclass
 class Record:
-    args: list[Any] = field(default_factory=list)
+    args: Tuple[Any, ...] = field(default_factory=tuple)
     kwargs: dict[str, Any] = field(default_factory=dict)
     result: Any = None
 
@@ -29,15 +29,24 @@ class Inspector:
     def _production_mode(self, function: Callable):
         return function
 
+    def _fake_mode(self, function: Callable):
+        def wrapper(*args, **kwargs):
+            return None
+
+        return wrapper
+
     def __call__(self, name: str):
         def outter_wrapper(function: Callable):
             if self._mode == Mode.PRODUCTION:
                 return self._production_mode(function)
 
+            if self._mode == Mode.FAKE:
+                return self._fake_mode(function)
+
             def wrapper(*args, **kwargs):
                 result = function(*args, **kwargs)
                 self._records[name].append(
-                    Record(args=list(args), kwargs=kwargs, result=result)
+                    Record(args=args, kwargs=kwargs, result=result)
                 )
                 return result
 
