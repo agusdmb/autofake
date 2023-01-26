@@ -1,11 +1,11 @@
 import pytest
 
-from inspector import Inspector
+from inspector import Inspector, Mode
 
 
 @pytest.fixture(scope="function", name="inspector")
 def fixture_inspector():
-    return Inspector()
+    return Inspector(Mode.RECORD)
 
 
 @pytest.fixture(name="simplest_func")
