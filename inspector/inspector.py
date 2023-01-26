@@ -14,15 +14,18 @@ class Inspector:
     def __init__(self):
         self._records = defaultdict(list)
 
-    def __call__(self, function):
-        def wrapper(*args, **kwargs):
-            result = function(*args, **kwargs)
-            self._records[function.__class__].append(
-                Record(args=list(args), kwargs=kwargs, result=result)
-            )
-            return result
+    def __call__(self, name):
+        def outter_wrapper(function):
+            def wrapper(*args, **kwargs):
+                result = function(*args, **kwargs)
+                self._records[name].append(
+                    Record(args=list(args), kwargs=kwargs, result=result)
+                )
+                return result
 
-        return wrapper
+            return wrapper
 
-    def get_records_of(self, function):
-        return self._records[function.__class__]
+        return outter_wrapper
+
+    def get_records_of(self, name):
+        return self._records[name]
