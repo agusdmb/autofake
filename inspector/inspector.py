@@ -2,6 +2,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
+from functools import wraps
 from typing import Any, Tuple
 
 
@@ -29,7 +30,8 @@ class Inspector:
     def _production_mode(self, function: Callable):
         return function
 
-    def _fake_mode(self, name: str):
+    def _fake_mode(self, function: Callable, name: str):
+        @wraps(function)
         def wrapper(*args, **kwargs):
             return self._get_result_from(name, *args, **kwargs)
 
@@ -41,8 +43,9 @@ class Inspector:
                 return self._production_mode(function)
 
             if self._mode == Mode.FAKE:
-                return self._fake_mode(name)
+                return self._fake_mode(function, name)
 
+            @wraps(function)
             def wrapper(*args, **kwargs):
                 result = function(*args, **kwargs)
                 self._records[name].append(
