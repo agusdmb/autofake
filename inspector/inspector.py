@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from enum import Enum, auto
 from functools import wraps
-from typing import Any, Optional
+from typing import Optional
 
 from inspector.backend import Backend, InMemory
 from inspector.models import Record
@@ -24,7 +24,7 @@ class Inspector:
     def _fake_mode(self, function: Callable, name: str) -> Callable:
         @wraps(function)
         def wrapper(*args, **kwargs):
-            return self.get_result(name, *args, **kwargs)
+            return self._backend.get_result(name, *args, **kwargs)
 
         return wrapper
 
@@ -52,6 +52,3 @@ class Inspector:
             raise ValueError(f"Unkown mode {self._mode}")
 
         return outter_wrapper
-
-    def get_result(self, name: str, *args, **kwargs) -> Any:
-        return self._backend.get_result(name, *args, **kwargs)

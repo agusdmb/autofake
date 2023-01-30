@@ -1,21 +1,18 @@
-from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any
+from typing import Any, Protocol
 
 from inspector.models import Record
 
 
-class Backend(ABC):
-    @abstractmethod
+class Backend(Protocol):
     def record_call(self, name: str, record: Record):
         ...
 
-    @abstractmethod
     def get_result(self, name: str, record: Record) -> Any:
         ...
 
 
-class InMemory(Backend):
+class InMemory:
     def __init__(self):
         self._records = defaultdict(list)
 

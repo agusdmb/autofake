@@ -3,12 +3,7 @@ from unittest import mock
 
 import pytest
 
-from inspector import Inspector, Record, __version__
-from inspector.inspector import Mode
-
-
-def test_version():
-    assert __version__ == "0.1.0"
+from inspector.inspector import Inspector, Mode
 
 
 def test_function(function):
@@ -32,15 +27,15 @@ def test_get_recrods(inspector: Inspector, function: Callable):
     function(3, b=4)
     function(6, b=7)
 
-    assert inspector.get_result("function", 6, b=7) == 13
-    assert inspector.get_result("function", 3, b=4) == 7
+    assert inspector._backend.get_result("function", 6, b=7) == 13
+    assert inspector._backend.get_result("function", 3, b=4) == 7
 
 
 def test_get_non_existing_recrods(inspector: Inspector, function: Callable):
     function(3, b=4)
 
     with pytest.raises(ValueError):
-        assert inspector.get_result("function", 6, b=7) == 13
+        assert inspector._backend.get_result("function", 6, b=7) == 13
 
 
 def test_replay():
