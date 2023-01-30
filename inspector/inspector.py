@@ -20,9 +20,14 @@ class Record:
 
 
 class Inspector:
-    def __init__(self, mode: Mode = Mode.PRODUCTION):
+    def __init__(
+        self,
+        mode: Mode = Mode.PRODUCTION,
+        backend: Callable[[Record], None] = lambda _: None,
+    ):
         self._records: dict[str, list[Record]] = defaultdict(list)
         self._mode = mode
+        self._backend = backend
 
     def load_records(self, records: dict[str, list[Record]]):
         self._records = records
@@ -48,9 +53,9 @@ class Inspector:
             @wraps(function)
             def wrapper(*args, **kwargs):
                 result = function(*args, **kwargs)
-                self._records[name].append(
-                    Record(args=args, kwargs=kwargs, result=result)
-                )
+                record = Record(args=args, kwargs=kwargs, result=result)
+                self._backend(record)
+                self._records[name].append(record)
                 return result
 
             return wrapper

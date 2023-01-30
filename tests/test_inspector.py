@@ -1,3 +1,5 @@
+from unittest import mock
+
 from inspector import Inspector, Record, __version__
 from inspector.inspector import Mode
 
@@ -114,3 +116,16 @@ def test_get_record():
     records = {"first_func": [Record()], "second_func": [Record((3, 4), result=7)]}
     inspector.load_records(records)
     assert inspector._get_result_from("second_func", *(3, 4)) == 7
+
+
+def test_backend_record():
+    fake_backend = mock.MagicMock()
+    inspector = Inspector(mode=Mode.RECORD, backend=fake_backend)
+
+    @inspector("function")
+    def function():
+        return 1
+
+    function()
+
+    fake_backend.assert_called_once_with(inspector.get_records_of("function")[0])
