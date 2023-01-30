@@ -1,9 +1,10 @@
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from functools import wraps
-from typing import Any, Tuple
+from typing import Any, Optional, Tuple
 
 
 class Mode(Enum):
@@ -19,18 +20,35 @@ class Record:
     result: Any = None
 
 
+class Backend(ABC):
+    @abstractmethod
+    def record_call(self, name: str, record: Record):
+        ...
+
+    @abstractmethod
+    def get_result(self, name: str, record: Record) -> Any:
+        ...
+
+
+class InMemory(Backend):
+    def __init__(self):
+        self._records = defaultdict(list)
+
+    def record_call(self, name: str, record: Record):
+        self._records[name].append(record)
+
+    def get_result(self, name: str, *args, **kwargs) -> Any:
+        for record in self._records[name]:
+            if record.args == args and record.kwargs == kwargs:
+                return record.result
+        raise ValueError("Record not found")
+
+
 class Inspector:
-    def __init__(
-        self,
-        mode: Mode = Mode.PRODUCTION,
-        backend: Callable[[Record], None] = lambda _: None,
-    ):
+    def __init__(self, mode: Mode = Mode.PRODUCTION, backend: Optional[Backend] = None):
         self._records: dict[str, list[Record]] = defaultdict(list)
         self._mode = mode
-        self._backend = backend
-
-    def load_records(self, records: dict[str, list[Record]]):
-        self._records = records
+        self._backend = backend or InMemory()
 
     def _production_mode(self, function: Callable):
         return function
@@ -38,7 +56,7 @@ class Inspector:
     def _fake_mode(self, function: Callable, name: str):
         @wraps(function)
         def wrapper(*args, **kwargs):
-            return self._get_result_from(name, *args, **kwargs)
+            return self.get_result(name, *args, **kwargs)
 
         return wrapper
 
@@ -54,7 +72,7 @@ class Inspector:
             def wrapper(*args, **kwargs):
                 result = function(*args, **kwargs)
                 record = Record(args=args, kwargs=kwargs, result=result)
-                self._backend(record)
+                self._backend.record_call(name, record)
                 self._records[name].append(record)
                 return result
 
@@ -62,14 +80,5 @@ class Inspector:
 
         return outter_wrapper
 
-    def get_records_of(self, name: str) -> list[Record]:
-        return self._records[name]
-
-    def get_records(self) -> dict[str, list[Record]]:
-        return self._records
-
-    def _get_result_from(self, name: str, *args, **kwargs) -> Any:
-        for record in self._records[name]:
-            if record.args == args and record.kwargs == kwargs:
-                return record.result
-        raise ValueError("Record not found")
+    def get_result(self, name: str, *args, **kwargs) -> Any:
+        return self._backend.get_result(name, *args, **kwargs)
