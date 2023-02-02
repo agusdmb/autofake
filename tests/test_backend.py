@@ -3,9 +3,9 @@ import tempfile
 
 import pytest
 
-from inspector.backend import JsonBackend
-from inspector.exceptions import RecordNotFound
-from inspector.models import Record
+from fakeit.backend import JsonBackend
+from fakeit.exceptions import RecordNotFound
+from fakeit.models import Record
 
 
 class TestJsonBackend:

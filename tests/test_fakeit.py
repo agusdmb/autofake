@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from inspector.inspector import Inspector, Mode
+from fakeit.fakeit import FakeIt, Mode
 
 
 def test_function(function):
@@ -12,9 +12,9 @@ def test_function(function):
 
 def test_production_doesnt_record():
     fake_backend = mock.MagicMock()
-    inspector = Inspector(Mode.PRODUCTION, fake_backend)
+    fakeit = FakeIt(Mode.PRODUCTION, fake_backend)
 
-    @inspector("function")
+    @fakeit("function")
     def function():
         return 1
 
@@ -23,26 +23,26 @@ def test_production_doesnt_record():
     fake_backend.assert_not_called()
 
 
-def test_get_recrods(inspector: Inspector, function: Callable):
+def test_get_recrods(fakeit: FakeIt, function: Callable):
     function(3, b=4)
     function(6, b=7)
 
-    assert inspector._backend.get_result("function", 6, b=7) == 13
-    assert inspector._backend.get_result("function", 3, b=4) == 7
+    assert fakeit._backend.get_result("function", 6, b=7) == 13
+    assert fakeit._backend.get_result("function", 3, b=4) == 7
 
 
-def test_get_non_existing_recrods(inspector: Inspector, function: Callable):
+def test_get_non_existing_recrods(fakeit: FakeIt, function: Callable):
     function(3, b=4)
 
     with pytest.raises(ValueError):
-        assert inspector._backend.get_result("function", 6, b=7) == 13
+        assert fakeit._backend.get_result("function", 6, b=7) == 13
 
 
 def test_replay():
     fake_backend = mock.MagicMock()
-    inspector = Inspector(Mode.FAKE, fake_backend)
+    fakeit = FakeIt(Mode.FAKE, fake_backend)
 
-    @inspector("function")
+    @fakeit("function")
     def function(a, *, b):
         raise Exception("Should not run")
 

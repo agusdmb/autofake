@@ -1,16 +1,16 @@
 import pytest
 
-from inspector import Inspector, Mode
+from fakeit import FakeIt, Mode
 
 
-@pytest.fixture(scope="function", name="inspector")
-def fixture_inspector():
-    return Inspector(Mode.RECORD)
+@pytest.fixture(scope="function", name="fakeit")
+def fixture_fakeit():
+    return FakeIt(Mode.RECORD)
 
 
 @pytest.fixture(name="function")
-def fixture_function(inspector):
-    @inspector("function")
+def fixture_function(fakeit):
+    @fakeit("function")
     def function(a, b):
         return a + b
 

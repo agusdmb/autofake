@@ -1,19 +1,12 @@
 from collections.abc import Callable
-from enum import Enum, auto
 from functools import wraps
 from typing import Optional
 
-from inspector.backend import Backend, InMemoryBackend
-from inspector.models import Record
+from fakeit.backend import Backend, InMemoryBackend
+from fakeit.models import Mode, Record
 
 
-class Mode(Enum):
-    RECORD = auto()
-    FAKE = auto()
-    PRODUCTION = auto()
-
-
-class Inspector:
+class FakeIt:
     def __init__(self, mode: Mode = Mode.PRODUCTION, backend: Optional[Backend] = None):
         self._mode = mode
         self._backend = backend or InMemoryBackend()
