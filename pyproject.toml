@@ -6,7 +6,7 @@ authors = ["Agustin Marquez <agusdmb@gmail.com>"]
 repository = "https://github.com/agusdmb/autofake"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.1"
