@@ -28,7 +28,7 @@ class InMemoryBackend:
         raise ValueError("Record not found")
 
 
-class JsonBackend:
+class JSONBackend:
     def __init__(self, filename):
         self._filename = filename
         self._records = []
