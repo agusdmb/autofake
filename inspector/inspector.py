@@ -3,7 +3,7 @@ from enum import Enum, auto
 from functools import wraps
 from typing import Optional
 
-from inspector.backend import Backend, InMemory
+from inspector.backend import Backend, InMemoryBackend
 from inspector.models import Record
 
 
@@ -16,7 +16,7 @@ class Mode(Enum):
 class Inspector:
     def __init__(self, mode: Mode = Mode.PRODUCTION, backend: Optional[Backend] = None):
         self._mode = mode
-        self._backend = backend or InMemory()
+        self._backend = backend or InMemoryBackend()
 
     def _production_mode(self, function: Callable):
         return function
