@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fakeit"
+name = "autofake"
 version = "0.1.0"
 description = ""
 authors = ["Agustin Marquez <agusdmb@gmail.com>"]

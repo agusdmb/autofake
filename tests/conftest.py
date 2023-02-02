@@ -1,6 +1,6 @@
 import pytest
 
-from fakeit import FakeIt, Mode
+from autofake import FakeIt, Mode
 
 
 @pytest.fixture(scope="function", name="fakeit")

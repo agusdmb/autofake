@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from fakeit.fakeit import FakeIt, Mode
+from autofake.fakeit import FakeIt, Mode
 
 
 def test_function(function):

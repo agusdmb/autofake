@@ -2,8 +2,8 @@ from collections.abc import Callable
 from functools import wraps
 from typing import Optional
 
-from fakeit.backend import Backend, InMemoryBackend
-from fakeit.models import Mode, Record
+from .backend import Backend, InMemoryBackend
+from .models import Mode, Record
 
 
 class FakeIt:

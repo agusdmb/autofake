@@ -2,8 +2,8 @@ import json
 from collections import defaultdict
 from typing import Any, Protocol
 
-from fakeit.exceptions import RecordNotFound
-from fakeit.models import Record
+from .exceptions import RecordNotFound
+from .models import Record
 
 
 class Backend(Protocol):
