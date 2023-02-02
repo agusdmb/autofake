@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 from typing import Any, Protocol
 
+from inspector.exceptions import RecordNotFound
 from inspector.models import Record
 
 
@@ -47,7 +48,7 @@ class JsonBackend:
                     if record["args"] == list(args) and record["kwargs"] == kwargs:
                         return record["result"]
 
-        raise ValueError("Record not found")
+        raise RecordNotFound("Record not found")
 
     def _load_records(self):
         with open(self._filename) as file:
