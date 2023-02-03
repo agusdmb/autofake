@@ -1,34 +1,35 @@
 ![Tests](https://github.com/agusdmb/autofake/actions/workflows/tests.yml/badge.svg)
 
-# FakeIt
+# AutoFake
 
 ## A Python Library for Mocking Functions in Testing
 
-FakeIt is a Python library that provides an easy way to mock functions in your
-tests. It allows you to run your code normally, recording the calls and returns
-for some functions, then stores the results in a backend. During testing, you
-can then reproduce the results of those functions instead of running the
-actual implementation. This is useful when you want to isolate the code you
-are testing and avoid external dependencies, such as network calls or heavy
-computations.
+AutoFake is a Python library that provides an easy way to mock functions in
+your tests. It allows you to run your code normally, recording the calls and
+returns for some functions, then stores the results in a backend. During
+testing, you can then reproduce the results of those functions instead of
+running the actual implementation. This is useful when you want to isolate the
+code you are testing and avoid external dependencies, such as network calls or
+heavy computations. (This plays well with
+[ApprovalTesting](https://approvaltests.com/))
 
 ## Getting Started
 
 ### Installation
 
-To install FakeIt, simply run:
+To install AutoFake, simply run:
 
 ```bash
-pip install fakeit
+pip install autofake
 ```
 
-### Initializing FakeIt
+### Initializing AutoFake
 
-FakeIt can be initialized with a mode and a backend:
+AutoFake can be initialized with a mode and a backend:
 
 ```python
-from fakeit.fakeit import FakeIt, Mode
-from fakeit.backend import InMemoryBackend
+from autofake.fakeit import FakeIt, Mode
+from autofake.backend import InMemoryBackend
 
 fakeit = FakeIt(mode=Mode.RECORD, backend=InMemoryBackend())
 ```
@@ -44,7 +45,7 @@ the results of the function call with the given name.
 Here's an example:
 
 ```python
-from fakeit import FakeIt
+from autofake import FakeIt
 
 fake = FakeIt(mode=FakeIt.Mode.RECORD)
 
@@ -74,7 +75,7 @@ results in a DB or anywhere really.
 Here's an example of how to use the JSONBackend:
 
 ```python
-from fakeit import FakeIt
+from autofake import FakeIt
 
 fake = FakeIt(mode=FakeIt.Mode.RECORD, backend=FakeIt.JSONBackend("results.json"))
 
@@ -83,20 +84,24 @@ def get_data():
     return requests.get("https://www.example.com/data").json()
 ```
 
-## Why use FakeIt
-FakeIt helps to isolate your code from external dependencies, making it easy to
-test and debug your code. It also helps to reduce the cost of network requests
-and database calls during development and testing.
+## Why use AutoFake
+
+AutoFake helps to isolate your code from external dependencies, making it easy
+to test and debug your code. It also helps to reduce the cost of network
+requests and database calls during development and testing.
 
 ## Conclusion
-FakeIt is a simple, yet powerful library for managing your code's dependencies.
-It helps to isolate your code from external dependencies, making it easy to
-test and debug your code.
+
+AutoFake is a simple, yet powerful library for managing your code's
+dependencies. It helps to isolate your code from external dependencies, making
+it easy to test and debug your code.
 
 ## Contributing
-To contribute to FakeIt, simply fork the repository and create a pull request
+
+To contribute to AutoFake, simply fork the repository and create a pull request
 with your changes.
 
 ## License
-FakeIt is licensed under the MIT License. See the LICENSE file for more
+
+AutoFake is licensed under the MIT License. See the LICENSE file for more
 information.
