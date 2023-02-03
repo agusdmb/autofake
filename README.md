@@ -1,3 +1,5 @@
+![Tests](https://github.com/agusdmb/autofake/actions/workflows/tests.yml/badge.svg)
+
 # FakeIt
 
 ## A Python Library for Mocking Functions in Testing
