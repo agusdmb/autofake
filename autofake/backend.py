@@ -1,4 +1,5 @@
 import json
+import pickle
 from collections import defaultdict
 from typing import Any, Protocol
 
@@ -25,7 +26,40 @@ class InMemoryBackend:
         for record in self._records[name]:
             if record.args == args and record.kwargs == kwargs:
                 return record.result
-        raise ValueError("Record not found")
+        raise RecordNotFound("Record not found")
+
+
+class PickleBackend:
+    def __init__(self, filename):
+        self._filename = filename
+        self._records = defaultdict(list)
+
+    def record_call(self, name: str, record: Record):
+        self._records[name].append(record)
+        self.dump()
+
+    def dump(self):
+        with open(self._filename, "wb") as file:
+            pickle.dump(self._records, file)
+
+    def get_result(self, name: str, *args, **kwargs) -> Any:
+        if not self._records:
+            self._load_records()
+
+        for record in self._records[name]:
+            if record.args == args and record.kwargs == kwargs:
+                return record.result
+        raise RecordNotFound("Record not found")
+
+    def _load_records(self):
+        try:
+            with open(self._filename, "rb") as file:
+                self._records = pickle.load(file)
+        except EOFError:
+            pass
+
+    def __repr__(self):
+        return f"<PickleBackend {self._filename}, {self._records}>"
 
 
 class JSONBackend:
