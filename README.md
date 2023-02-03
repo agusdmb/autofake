@@ -23,9 +23,10 @@ To install AutoFake, simply run:
 pip install autofake
 ```
 
-### Initializing AutoFake
+### Initializing FakeIt
 
-AutoFake can be initialized with a mode and a backend:
+FakeIt is the main class in AutoFake can be initialized with a mode and a
+backend:
 
 ```python
 from autofake.fakeit import FakeIt, Mode
@@ -64,10 +65,16 @@ In Mode.RECORD, the function will be executed and the result will be recorded in
 
 ## Backend
 
-FakeIt has two built-in backends: InMemoryBackend and JSONBackend. The first
-one is an in-memory backend, this one is mainly used for trying out stuff, it
-stores the results of function calls in memory. The second one is a JSON
-backend, it stores the results of function calls in a JSON file.
+FakeIt has three built-in backends (and i will keep on adding more):
+
+PickleBackend: This is a Python pickle backend, it stores the results of
+function calls in a pickle file.
+
+JSONBackend: This is a JSON backend, it stores the results of function calls in
+a JSON file.
+
+InMemoryBackend: This is an in-memory backend, is mainly used for trying out
+stuff, it only stores the results of function calls in memory.
 
 Implementing new backends is pretty straight forward, so you could store the
 results in a DB or anywhere really.

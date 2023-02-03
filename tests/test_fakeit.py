@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from autofake.fakeit import FakeIt, Mode
+from autofake import FakeIt, Mode, RecordNotFound
 
 
 def test_function(function):
@@ -34,7 +34,7 @@ def test_get_recrods(fakeit: FakeIt, function: Callable):
 def test_get_non_existing_recrods(fakeit: FakeIt, function: Callable):
     function(3, b=4)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(RecordNotFound):
         assert fakeit._backend.get_result("function", 6, b=7) == 13
 
 
