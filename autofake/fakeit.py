@@ -1,3 +1,4 @@
+import os
 from collections.abc import Callable
 from functools import wraps
 from typing import Optional
@@ -7,9 +8,17 @@ from .models import Mode, Record
 
 
 class FakeIt:
-    def __init__(self, mode: Mode = Mode.PRODUCTION, backend: Optional[Backend] = None):
-        self._mode = mode
+    def __init__(self, mode: Optional[Mode] = None, backend: Optional[Backend] = None):
+        self._mode = self._determine_mode(mode)
         self._backend = backend or InMemoryBackend()
+
+    def _determine_mode(self, mode: Optional[Mode] = None):
+        if mode:
+            return mode
+        env_mode = os.environ.get("AUTOFAKE")
+        if env_mode:
+            return Mode(env_mode)
+        return Mode.PRODUCTION
 
     def _production_mode(self, function: Callable):
         return function

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum, auto
+from enum import Enum
 from typing import Any, Tuple
 
 
@@ -12,7 +12,7 @@ class Record:
     result: Any = None
 
 
-class Mode(Enum):
-    RECORD = auto()
-    FAKE = auto()
-    PRODUCTION = auto()
+class Mode(str, Enum):
+    RECORD = "RECORD"
+    FAKE = "FAKE"
+    PRODUCTION = "PRODUCTION"
