@@ -4,14 +4,15 @@
 
 ## A Python Library for Mocking Functions in Testing
 
-AutoFake is a Python library that provides an easy way to mock functions in
-your tests. It allows you to run your code normally, recording the calls and
-returns for some functions, then stores the results in a backend. During
-testing, you can then reproduce the results of those functions instead of
-running the actual implementation. This is useful when you want to isolate the
-code you are testing and avoid external dependencies, such as network calls or
-heavy computations. (This plays well with
-[ApprovalTesting](https://approvaltests.com/))
+ AutoFake is a Python library that makes it easy to mock functions in your
+ tests. It allows you to run your code normally and records the calls and
+ returns of specified functions. The results are then stored in a backend.
+ During testing, you can reproduce the results of these functions instead of
+ executing their actual implementation, which is useful for isolating the code
+ you are testing and avoiding external dependencies, side effects, and
+ long-running functions. AutoFake is also well-suited for adding tests to
+ legacy code and refactoring (it works well with
+ [ApprovalTesting](https://approvaltests.com/))
 
 ## Getting Started
 
@@ -23,85 +24,102 @@ To install AutoFake, simply run:
 pip install autofake
 ```
 
-### Initializing FakeIt
+### Usage
 
-FakeIt is the main class in AutoFake can be initialized with a mode and a
-backend:
+Here's an example of how to use AutoFake:
 
-```python
-from autofake.fakeit import FakeIt, Mode
-from autofake.backend import InMemoryBackend
-
-fakeit = FakeIt(mode=Mode.RECORD, backend=InMemoryBackend())
-```
-
-The mode can be set to Mode.PRODUCTION, Mode.FAKE, or Mode.RECORD.
-
-## How to use FakeIt
-
-To use FakeIt, you have to wrap the functions that have external dependencies
-with a FakeIt decorator. This decorator accepts a name, which is used to store
-the results of the function call with the given name.
-
-Here's an example:
 
 ```python
-from autofake import FakeIt
+# example.py
 
-fake = FakeIt(mode=FakeIt.Mode.RECORD)
+import smtplib
+import time
 
-@fake("get_data")
-def get_data():
-    return requests.get("https://www.example.com/data").json()
+import requests
+
+from autofake import FakeIt, PickleBackend
+
+fakeit = FakeIt(backend=PickleBackend("output.pickle"))
+
+
+# Mocking external services
+@fakeit("get_data")
+def get_data(payload):
+    return requests.get("https://www.example.com/data", params=payload).json()
+
+
+# Avoiding side effects
+@fakeit("send_email")
+def send_email(to, subject, message):
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login("email@example.com", "password")
+    message = f"Subject: {subject}\n\n{message}"
+    server.sendmail("email@example.com", to, message)
+    server.quit()
+
+
+# As a cache for long running functions
+@fakeit("long_running_process")
+def long_running_process(duration, n):
+    time.sleep(duration)
+    return n
+
 ```
+
+To record the function calls, parameters, and results, run:
+
+```bash
+AUTOFAKE=RECORD python example.py
+```
+
+This will run the functions normally and store the results in the
+`output.pickle` file.
+
+To fake the functions, run:
+
+```bash
+AUTOFAKE=FAKE python example.py
+```
+
+This time, the decorated functions will not be executed but their return values
+(if any) will be retrieved from the backend.
+
+## The FakeIt Object
+
+The `FakeIt` class is the main class in AutoFake and can be initialized with a
+mode and a backend.
+
+### Modes
 
 You can run your code in three modes:
 
-In Mode.PRODUCTION, the function will be executed normally.
+- `PRODUCTION` mode: the function will be executed normally without any action
+  (this is the default behavior).
 
-In Mode.FAKE, the function will return the recorded result instead of executing the implementation.
+- `RECORD` mode: the function will be executed normally and the call,
+  arguments, and result will be recorded in the backend.
 
-In Mode.RECORD, the function will be executed and the result will be recorded in the backend.
+- `FAKE` mode: the function will not be executed, and its recorded result will
+  be retrieved from the backend for the given arguments.
 
-## Backend
+You can either set the mode when instantiating the FakeIt class by passing the
+argument mode, or by setting an environment variable `AUTOFAKE` to one of
+`PRODUCTION`, `RECORD` or `FAKE`.
 
-FakeIt has three built-in backends (and i will keep on adding more):
+### Backends
 
-PickleBackend: This is a Python pickle backend, it stores the results of
-function calls in a pickle file.
+The backend determines where the calls, parameters and returns values are
+stored. Different backends are provided such as `PickleBackend` and
+`JSONBackend`. Pass the backend as an argument to the FakeIt Initialization.
 
-JSONBackend: This is a JSON backend, it stores the results of function calls in
-a JSON file.
+### Decorating functions
 
-InMemoryBackend: This is an in-memory backend, is mainly used for trying out
-stuff, it only stores the results of function calls in memory.
-
-Implementing new backends is pretty straight forward, so you could store the
-results in a DB or anywhere really.
-
-Here's an example of how to use the JSONBackend:
-
-```python
-from autofake import FakeIt
-
-fake = FakeIt(mode=FakeIt.Mode.RECORD, backend=FakeIt.JSONBackend("results.json"))
-
-@fake("get_data")
-def get_data():
-    return requests.get("https://www.example.com/data").json()
-```
-
-## Why use AutoFake
-
-AutoFake helps to isolate your code from external dependencies, making it easy
-to test and debug your code. It also helps to reduce the cost of network
-requests and database calls during development and testing.
-
-## Conclusion
-
-AutoFake is a simple, yet powerful library for managing your code's
-dependencies. It helps to isolate your code from external dependencies, making
-it easy to test and debug your code.
+To use FakeIt, you have to wrap the functions you want to fake with a FakeIt
+decorator. This decorator accepts a name, which is used to store the results of
+the function call with the given name.
 
 ## Contributing
 
