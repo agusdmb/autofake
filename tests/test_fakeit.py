@@ -1,3 +1,4 @@
+import os
 from typing import Callable
 from unittest import mock
 
@@ -50,3 +51,30 @@ def test_replay():
 
     fake_backend.record_call.assert_not_called()
     fake_backend.get_result.assert_called_once_with("function", 3, b=4)
+
+
+@pytest.mark.parametrize("mode_env", ["RECORD", "FAKE", "PRODUCTION"])
+def test_env(mode_env):
+    previous = os.environ.get("AUTOFAKE")
+    os.environ["AUTOFAKE"] = mode_env
+    fakeit = FakeIt()
+    assert fakeit._mode == Mode(mode_env)
+    os.environ["AUTOFAKE"] = previous or ""
+
+
+@pytest.mark.parametrize("mode_env", ["RECORD", "FAKE", "PRODUCTION"])
+@pytest.mark.parametrize("mode_arg", ["RECORD", "FAKE", "PRODUCTION"])
+def test_env_overrited(mode_env, mode_arg):
+    previous = os.environ.get("AUTOFAKE")
+    os.environ["AUTOFAKE"] = mode_env
+    fakeit = FakeIt(mode=Mode(mode_arg))
+    assert fakeit._mode == Mode(mode_arg)
+    os.environ["AUTOFAKE"] = previous or ""
+
+
+def test_default_mode():
+    previous = os.environ.get("AUTOFAKE")
+    os.environ["AUTOFAKE"] = ""
+    fakeit = FakeIt()
+    assert fakeit._mode == Mode.PRODUCTION
+    os.environ["AUTOFAKE"] = previous or ""
