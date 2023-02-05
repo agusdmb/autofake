@@ -20,7 +20,7 @@ def test_production_doesnt_record():
 
     function()
 
-    fake_backend.assert_not_called()
+    fake_backend.record_call.assert_not_called()
 
 
 def test_get_recrods(fakeit: FakeIt, function: Callable):
