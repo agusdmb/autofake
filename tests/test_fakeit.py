@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 
-from autofake import FakeIt, Mode, RecordNotFound
+from autofake import FakeIt, Mode, NotUniqueName, RecordNotFound
 
 
 def test_function(function):
@@ -78,3 +78,15 @@ def test_default_mode():
     fakeit = FakeIt()
     assert fakeit._mode == Mode.PRODUCTION
     os.environ["AUTOFAKE"] = previous or ""
+
+
+def test_same_name_decorated(fakeit):
+    @fakeit
+    def function():
+        pass
+
+    with pytest.raises(NotUniqueName):
+
+        @fakeit
+        def function():
+            pass
