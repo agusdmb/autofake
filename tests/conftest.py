@@ -10,7 +10,7 @@ def fixture_fakeit():
 
 @pytest.fixture(name="function")
 def fixture_function(fakeit):
-    @fakeit("function")
+    @fakeit
     def function(a, b):
         return a + b
 

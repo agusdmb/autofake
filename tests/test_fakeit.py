@@ -15,7 +15,7 @@ def test_production_doesnt_record():
     fake_backend = mock.MagicMock()
     fakeit = FakeIt(Mode.PRODUCTION, fake_backend)
 
-    @fakeit("function")
+    @fakeit
     def function():
         return 1
 
@@ -43,7 +43,7 @@ def test_replay():
     fake_backend = mock.MagicMock()
     fakeit = FakeIt(Mode.FAKE, fake_backend)
 
-    @fakeit("function")
+    @fakeit
     def function(a, *, b):
         raise Exception("Should not run")
 
