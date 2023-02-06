@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 
-from autofake import FakeIt, Mode, RecordNotFound
+from autofake import FakeIt, Mode, NotUniqueName, RecordNotFound
 
 
 def test_function(function):
@@ -15,7 +15,7 @@ def test_production_doesnt_record():
     fake_backend = mock.MagicMock()
     fakeit = FakeIt(Mode.PRODUCTION, fake_backend)
 
-    @fakeit("function")
+    @fakeit
     def function():
         return 1
 
@@ -43,7 +43,7 @@ def test_replay():
     fake_backend = mock.MagicMock()
     fakeit = FakeIt(Mode.FAKE, fake_backend)
 
-    @fakeit("function")
+    @fakeit
     def function(a, *, b):
         raise Exception("Should not run")
 
@@ -78,3 +78,15 @@ def test_default_mode():
     fakeit = FakeIt()
     assert fakeit._mode == Mode.PRODUCTION
     os.environ["AUTOFAKE"] = previous or ""
+
+
+def test_same_name_decorated(fakeit):
+    @fakeit
+    def function():
+        pass
+
+    with pytest.raises(NotUniqueName):
+
+        @fakeit
+        def function():
+            pass

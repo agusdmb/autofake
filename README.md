@@ -43,13 +43,13 @@ fakeit = FakeIt(backend=PickleBackend("output.pickle"))
 
 
 # Mocking external services
-@fakeit("get_data")
+@fakeit
 def get_data(payload):
     return requests.get("https://www.example.com/data", params=payload).json()
 
 
 # Avoiding side effects
-@fakeit("send_email")
+@fakeit
 def send_email(to, subject, message):
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.ehlo()
@@ -62,7 +62,7 @@ def send_email(to, subject, message):
 
 
 # As a cache for long running functions
-@fakeit("long_running_process")
+@fakeit
 def long_running_process(duration, n):
     time.sleep(duration)
     return n
