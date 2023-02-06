@@ -40,12 +40,9 @@ class FakeIt:
 
         return wrapper
 
-    def __call__(self, name: str):
-        def outter_wrapper(function: Callable):
-            if self._mode == Mode.FAKE:
-                return self._fake_mode(function, name)
-            if self._mode == Mode.RECORD:
-                return self._record_mode(function, name)
-            return self._production_mode(function)
-
-        return outter_wrapper
+    def __call__(self, function: Callable):
+        if self._mode == Mode.FAKE:
+            return self._fake_mode(function, function.__name__)
+        if self._mode == Mode.RECORD:
+            return self._record_mode(function, function.__name__)
+        return self._production_mode(function)
