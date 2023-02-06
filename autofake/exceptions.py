@@ -4,3 +4,7 @@ class FakeItException(Exception):
 
 class RecordNotFound(FakeItException):
     pass
+
+
+class NotUniqueName(FakeItException):
+    pass

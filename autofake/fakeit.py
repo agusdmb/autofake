@@ -4,6 +4,7 @@ from functools import wraps
 from typing import Optional
 
 from .backend import Backend, InMemoryBackend
+from .exceptions import NotUniqueName
 from .models import Mode, Record
 
 
@@ -11,6 +12,7 @@ class FakeIt:
     def __init__(self, mode: Optional[Mode] = None, backend: Optional[Backend] = None):
         self._mode = self._determine_mode(mode)
         self._backend = backend or InMemoryBackend()
+        self._decorated: set[str] = set()
 
     def _determine_mode(self, mode: Optional[Mode] = None):
         if mode:
@@ -41,8 +43,16 @@ class FakeIt:
         return wrapper
 
     def __call__(self, function: Callable):
+        self._record_decorated(function)
         if self._mode == Mode.FAKE:
             return self._fake_mode(function, function.__name__)
         if self._mode == Mode.RECORD:
             return self._record_mode(function, function.__name__)
         return self._production_mode(function)
+
+    def _record_decorated(self, function):
+        if function.__name__ in self._decorated:
+            raise NotUniqueName(
+                f"There is already a decorated function called {function.__name__}"
+            )
+        self._decorated.add(function.__name__)
